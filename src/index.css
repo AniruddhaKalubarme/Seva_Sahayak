@@ -1,0 +1,309 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Indian Citizen Services Form Assistant - Design System
+   Color palette: Deep blue (trust/government), Saffron (Indian identity), Clean whites
+   All colors in HSL format
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    /* Core brand - Deep Government Blue */
+    --background: 210 20% 98%;
+    --foreground: 220 25% 10%;
+
+    /* Cards & Surfaces */
+    --card: 0 0% 100%;
+    --card-foreground: 220 25% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 25% 10%;
+
+    /* Primary - Deep Blue (Trust & Authority) */
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 221 83% 65%;
+
+    /* Secondary - Slate for subtle elements */
+    --secondary: 210 20% 96%;
+    --secondary-foreground: 220 25% 25%;
+
+    /* Muted elements */
+    --muted: 210 20% 94%;
+    --muted-foreground: 215 20% 45%;
+
+    /* Accent - Saffron (Indian Heritage) */
+    --accent: 28 100% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Success - Green (completing the tricolor) */
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+
+    /* Semantic colors */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 20% 88%;
+    --input: 214 20% 90%;
+    --ring: 221 83% 53%;
+
+    --radius: 0.75rem;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(221, 83%, 53%) 0%, hsl(221, 83%, 40%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(28, 100%, 55%) 0%, hsl(28, 100%, 45%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(210, 20%, 98%) 0%, hsl(221, 40%, 96%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0, 0%, 100%) 0%, hsl(210, 20%, 99%) 100%);
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(220 25% 10% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(220 25% 10% / 0.1), 0 2px 4px -2px hsl(220 25% 10% / 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(220 25% 10% / 0.1), 0 4px 6px -4px hsl(220 25% 10% / 0.1);
+    --shadow-glow: 0 0 20px hsl(221 83% 53% / 0.2);
+    --shadow-accent-glow: 0 0 20px hsl(28 100% 50% / 0.3);
+
+    /* Sidebar */
+    --sidebar-background: 220 25% 10%;
+    --sidebar-foreground: 210 20% 90%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 25% 18%;
+    --sidebar-accent-foreground: 210 20% 90%;
+    --sidebar-border: 220 25% 18%;
+    --sidebar-ring: 221 83% 53%;
+  }
+
+  .dark {
+    --background: 220 25% 8%;
+    --foreground: 210 20% 95%;
+
+    --card: 220 25% 12%;
+    --card-foreground: 210 20% 95%;
+
+    --popover: 220 25% 12%;
+    --popover-foreground: 210 20% 95%;
+
+    --primary: 221 83% 60%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 221 83% 70%;
+
+    --secondary: 220 25% 18%;
+    --secondary-foreground: 210 20% 90%;
+
+    --muted: 220 25% 16%;
+    --muted-foreground: 215 20% 60%;
+
+    --accent: 28 100% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --success: 142 71% 50%;
+    --success-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 25% 20%;
+    --input: 220 25% 20%;
+    --ring: 221 83% 60%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(221, 83%, 60%) 0%, hsl(221, 83%, 45%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(220, 25%, 8%) 0%, hsl(220, 25%, 12%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(220, 25%, 12%) 0%, hsl(220, 25%, 10%) 100%);
+
+    --shadow-glow: 0 0 20px hsl(221 83% 60% / 0.3);
+
+    --sidebar-background: 220 25% 6%;
+    --sidebar-foreground: 210 20% 90%;
+    --sidebar-primary: 221 83% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 25% 12%;
+    --sidebar-accent-foreground: 210 20% 90%;
+    --sidebar-border: 220 25% 15%;
+    --sidebar-ring: 221 83% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  /* Typography */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  /* Smooth transitions */
+  * {
+    @apply transition-colors duration-150;
+  }
+}
+
+@layer components {
+  /* Upload zone styles */
+  .upload-zone {
+    @apply border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300;
+    @apply hover:border-primary hover:bg-primary/5;
+    @apply focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20;
+  }
+
+  .upload-zone-active {
+    @apply border-primary bg-primary/10 scale-[1.02];
+  }
+
+  /* Floating card effect */
+  .floating-card {
+    @apply bg-card rounded-xl border shadow-md;
+    @apply hover:shadow-lg hover:-translate-y-0.5;
+    @apply transition-all duration-300;
+  }
+
+  /* Glassmorphism effect */
+  .glass {
+    @apply bg-card/80 backdrop-blur-md border border-border/50;
+  }
+
+  /* Pulse animation for processing state */
+  .pulse-processing {
+    animation: pulse-processing 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse-processing {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  /* Voice button glow */
+  .voice-glow {
+    @apply relative;
+  }
+
+  .voice-glow::after {
+    content: '';
+    @apply absolute inset-0 rounded-full bg-accent/20 animate-ping;
+  }
+
+  /* Step indicator */
+  .step-indicator {
+    @apply flex items-center justify-center w-8 h-8 rounded-full text-sm font-semibold;
+    @apply transition-all duration-300;
+  }
+
+  .step-indicator-active {
+    @apply bg-primary text-primary-foreground shadow-md;
+    box-shadow: var(--shadow-glow);
+  }
+
+  .step-indicator-complete {
+    @apply bg-success text-success-foreground;
+  }
+
+  .step-indicator-pending {
+    @apply bg-muted text-muted-foreground;
+  }
+
+  /* Document preview */
+  .document-preview {
+    @apply rounded-lg border overflow-hidden bg-muted/30;
+    @apply shadow-inner;
+  }
+
+  /* Form field with voice input */
+  .form-field-voice {
+    @apply relative;
+  }
+
+  .form-field-voice .voice-btn {
+    @apply absolute right-2 top-1/2 -translate-y-1/2;
+  }
+}
+
+@layer utilities {
+  /* Indian flag tricolor accent line */
+  .tricolor-border {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tricolor-border::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, 
+      hsl(28, 100%, 50%) 0%, 
+      hsl(28, 100%, 50%) 33.33%, 
+      hsl(0, 0%, 100%) 33.33%, 
+      hsl(0, 0%, 100%) 66.66%, 
+      hsl(142, 71%, 45%) 66.66%, 
+      hsl(142, 71%, 45%) 100%
+    );
+  }
+
+  /* Gradient text */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-primary);
+  }
+
+  /* Shimmer effect for loading */
+  .shimmer {
+    background: linear-gradient(90deg, 
+      hsl(var(--muted)) 0%, 
+      hsl(var(--card)) 50%, 
+      hsl(var(--muted)) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* Fade in animation */
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out forwards;
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Slide up animation */
+  .animate-slide-up {
+    animation: slide-up 0.4s ease-out forwards;
+  }
+
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Scale in animation */
+  .animate-scale-in {
+    animation: scale-in 0.3s ease-out forwards;
+  }
+
+  @keyframes scale-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+}
