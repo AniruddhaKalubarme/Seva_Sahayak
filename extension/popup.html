@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { width: 380px; font-family: 'Segoe UI', system-ui, sans-serif; background: #f8fafc; color: #1e293b; }
+    .header { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; padding: 16px; text-align: center; }
+    .header h1 { font-size: 18px; font-weight: 700; }
+    .header p { font-size: 11px; opacity: 0.85; margin-top: 4px; }
+    .tabs { display: flex; border-bottom: 2px solid #e2e8f0; background: white; }
+    .tab { flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: 600; cursor: pointer; border: none; background: none; color: #64748b; transition: all 0.2s; }
+    .tab.active { color: #4f46e5; border-bottom: 2px solid #4f46e5; margin-bottom: -2px; }
+    .content { padding: 12px; max-height: 400px; overflow-y: auto; }
+    .field-group { margin-bottom: 10px; }
+    .field-group label { display: block; font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .field-group input, .field-group select, .field-group textarea { width: 100%; padding: 8px 10px; border: 1.5px solid #e2e8f0; border-radius: 6px; font-size: 13px; background: white; color: #1e293b; transition: border-color 0.2s; }
+    .field-group input:focus, .field-group select:focus, .field-group textarea:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+    .field-group textarea { resize: vertical; min-height: 60px; }
+    .btn { width: 100%; padding: 10px; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 6px; }
+    .btn-primary { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-secondary { background: #f1f5f9; color: #475569; border: 1.5px solid #e2e8f0; }
+    .btn-secondary:hover { background: #e2e8f0; }
+    .btn-danger { background: #fef2f2; color: #dc2626; border: 1.5px solid #fecaca; }
+    .btn-danger:hover { background: #fecaca; }
+    .btn-success { background: #f0fdf4; color: #16a34a; border: 1.5px solid #bbf7d0; }
+    .btn-success:hover { background: #bbf7d0; }
+    .status { padding: 10px; border-radius: 8px; font-size: 12px; text-align: center; margin-top: 8px; }
+    .status.success { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+    .status.error { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+    .status.info { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+    .empty-state { text-align: center; padding: 30px 20px; color: #94a3b8; }
+    .empty-state .icon { font-size: 40px; margin-bottom: 10px; }
+    .empty-state p { font-size: 13px; line-height: 1.5; }
+    .section-title { font-size: 13px; font-weight: 700; color: #334155; margin: 12px 0 8px; padding-bottom: 4px; border-bottom: 1px solid #e2e8f0; }
+    .actions { padding: 12px; border-top: 1px solid #e2e8f0; background: white; }
+    .hidden { display: none; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; background: #eff6ff; color: #2563eb; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>📄 DocFill</h1>
+    <p>Auto-fill Google Forms with your document data</p>
+  </div>
+  
+  <div class="tabs">
+    <button class="tab active" data-tab="view">View Data</button>
+    <button class="tab" data-tab="edit">Edit</button>
+    <button class="tab" data-tab="settings">Settings</button>
+  </div>
+
+  <!-- View Tab -->
+  <div id="tab-view" class="content">
+    <div id="data-display"></div>
+  </div>
+
+  <!-- Edit Tab -->
+  <div id="tab-edit" class="content hidden">
+    <div class="section-title">👤 Personal Info</div>
+    <div class="field-group"><label>Full Name</label><input type="text" id="edit-name"></div>
+    <div class="field-group"><label>Father's Name</label><input type="text" id="edit-fatherName"></div>
+    <div class="field-group"><label>Date of Birth</label><input type="text" id="edit-dateOfBirth" placeholder="DD/MM/YYYY"></div>
+    <div class="field-group"><label>Gender</label>
+      <select id="edit-gender"><option value="">Select</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select>
+    </div>
+    
+    <div class="section-title">📍 Address</div>
+    <div class="field-group"><label>Address</label><textarea id="edit-address"></textarea></div>
+    <div class="field-group"><label>District</label><input type="text" id="edit-district"></div>
+    <div class="field-group"><label>State</label><input type="text" id="edit-state"></div>
+    <div class="field-group"><label>Pincode</label><input type="text" id="edit-pincode" maxlength="6"></div>
+    
+    <div class="section-title">🪪 Document Numbers</div>
+    <div class="field-group"><label>Aadhaar Number</label><input type="text" id="edit-aadhaarNumber" maxlength="14"></div>
+    <div class="field-group"><label>PAN Number</label><input type="text" id="edit-panNumber" maxlength="10"></div>
+    <div class="field-group"><label>Voter ID</label><input type="text" id="edit-voterIdNumber" maxlength="10"></div>
+    <div class="field-group"><label>Driving License</label><input type="text" id="edit-drivingLicenseNumber" maxlength="15"></div>
+    
+    <div class="section-title">🎓 Academic & Profile</div>
+    <div class="field-group"><label>10th Marks / Percentage</label><input type="text" id="edit-marks10th" placeholder="e.g. 85% or 8.5 CGPA"></div>
+    <div class="field-group"><label>12th Marks / Percentage</label><input type="text" id="edit-marks12th" placeholder="e.g. 90% or 9.0 CGPA"></div>
+    <div class="field-group"><label>Engineering SGPA</label><input type="text" id="edit-sgpa" placeholder="e.g. 8.5"></div>
+    <div class="field-group"><label>Email Address</label><input type="text" id="edit-email" placeholder="your.email@example.com"></div>
+    <div class="field-group"><label>Phone Number</label><input type="text" id="edit-phone" placeholder="+91 9876543210"></div>
+    <div class="field-group"><label>CodeChef Profile</label><input type="text" id="edit-codechefLink" placeholder="https://www.codechef.com/users/..."></div>
+    <div class="field-group"><label>LeetCode Profile</label><input type="text" id="edit-leetcodeLink" placeholder="https://leetcode.com/..."></div>
+    <div class="field-group"><label>GitHub Profile</label><input type="text" id="edit-githubLink" placeholder="https://github.com/..."></div>
+    <div class="field-group"><label>GFG Profile</label><input type="text" id="edit-gfgLink" placeholder="https://geeksforgeeks.org/user/..."></div>
+    <div class="field-group"><label>HackerRank Profile</label><input type="text" id="edit-hackerrankLink" placeholder="https://hackerrank.com/..."></div>
+    <div class="field-group"><label>LinkedIn Profile</label><input type="text" id="edit-linkedinLink" placeholder="https://linkedin.com/in/..."></div>
+
+    <div class="section-title">➕ Custom Fields</div>
+    <div id="custom-fields-container"></div>
+    <div style="display:flex;gap:6px;margin-bottom:10px;">
+      <input type="text" id="new-field-label" placeholder="Field label (e.g. Roll Number)" style="flex:1;padding:8px 10px;border:1.5px solid #e2e8f0;border-radius:6px;font-size:13px;">
+      <button class="btn btn-secondary" id="add-field-btn" style="width:auto;padding:8px 14px;margin-top:0;">+ Add</button>
+    </div>
+    <div class="field-group" style="margin-bottom:8px;">
+      <label>📥 Import Custom Fields (JSON)</label>
+      <textarea id="import-custom-json" placeholder='{&#10;  "prnNumber": "72322050G",&#10;  "cocubesScore": 0,&#10;  "leetcodeScore": 42,&#10;  "beBTechAggregate": 84.20&#10;}' style="min-height:130px;font-size:12px;font-family:monospace;"></textarea>
+      <p style="font-size:11px;color:#64748b;margin-top:4px;">Format: <code>{"fieldName": "value"}</code> — each key becomes a custom field label.</p>
+    </div>
+    <button class="btn btn-secondary" id="import-custom-btn" style="margin-bottom:10px;">📥 Import Custom Fields</button>
+    <div id="custom-import-status"></div>
+
+    <button class="btn btn-primary" id="save-btn">💾 Save Changes</button>
+    <div id="save-status"></div>
+  </div>
+
+  <!-- Settings Tab -->
+  <div id="tab-settings" class="content hidden">
+    <div class="section-title">⚙️ Auto-Fill Settings</div>
+    <p style="font-size:12px;color:#64748b;margin-bottom:12px;">When on a Google Form, click the extension icon or use the floating button to auto-fill matching fields.</p>
+    
+    <button class="btn btn-success" id="fill-btn">🚀 Fill Current Google Form</button>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:10px;padding:10px;background:#f1f5f9;border-radius:6px;">
+      <input type="checkbox" id="debug-toggle" style="width:16px;height:16px;cursor:pointer;">
+      <label for="debug-toggle" style="font-size:12px;color:#475569;cursor:pointer;flex:1;">
+        🐞 <strong>Debug mode</strong> — highlight detected questions & log match scores in page console
+      </label>
+    </div>
+    <button class="btn btn-secondary" id="export-btn" style="margin-top:8px;">📋 Copy All Data as Text</button>
+    <div class="field-group" style="margin-top:8px;">
+      <label>📥 Import JSON Data</label>
+      <textarea id="import-json" placeholder="Paste your JSON data here..." style="min-height:80px;font-size:12px;font-family:monospace;"></textarea>
+    </div>
+    <button class="btn btn-secondary" id="import-btn">📥 Import Pasted JSON</button>
+    <button class="btn btn-danger" id="clear-btn" style="margin-top:8px;">🗑️ Clear All Data</button>
+    <div id="settings-status"></div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

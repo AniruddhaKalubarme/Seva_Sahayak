@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "DocFill - Auto Fill Google Forms",
+  "version": "1.0.0",
+  "description": "Auto-fill Google Forms with extracted document data. Store and manage your information securely in browser.",
+  "permissions": ["activeTab", "storage"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ],
+  "icons": {
+    "48": "icon.png",
+    "128": "icon.png"
+  }
+}

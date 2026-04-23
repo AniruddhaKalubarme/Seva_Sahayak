@@ -1,4 +1,4 @@
-import { FileText, Download, Edit2, Copy, User, MapPin, CreditCard } from 'lucide-react';
+import { FileText, Download, Edit2, Copy, User, MapPin, CreditCard, Chrome, Clipboard } from 'lucide-react';
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
@@ -27,6 +27,8 @@ export function ReviewPanel({
     { key: 'fatherName', label: t('fatherName'), value: formData.fatherName },
     { key: 'dateOfBirth', label: t('dateOfBirth'), value: formData.dateOfBirth },
     { key: 'gender', label: t('gender'), value: formData.gender ? t(formData.gender) : undefined },
+    { key: 'email', label: 'Email', value: formData.email },
+    { key: 'phone', label: 'Phone', value: formData.phone },
     { key: 'address', label: t('address'), value: formData.address },
     { key: 'district', label: t('district'), value: formData.district },
     { key: 'state', label: t('state'), value: formData.state },
@@ -35,6 +37,15 @@ export function ReviewPanel({
     { key: 'panNumber', label: t('panNumber'), value: formData.panNumber },
     { key: 'voterIdNumber', label: t('voterIdNumber'), value: formData.voterIdNumber },
     { key: 'drivingLicenseNumber', label: t('drivingLicenseNumber'), value: formData.drivingLicenseNumber },
+    { key: 'marks10th', label: '10th Marks', value: formData.marks10th },
+    { key: 'marks12th', label: '12th Marks', value: formData.marks12th },
+    { key: 'sgpa', label: 'Engineering SGPA', value: formData.sgpa },
+    { key: 'codechefLink', label: 'CodeChef', value: formData.codechefLink },
+    { key: 'leetcodeLink', label: 'LeetCode', value: formData.leetcodeLink },
+    { key: 'githubLink', label: 'GitHub', value: formData.githubLink },
+    { key: 'gfgLink', label: 'GeeksforGeeks', value: formData.gfgLink },
+    { key: 'hackerrankLink', label: 'HackerRank', value: formData.hackerrankLink },
+    { key: 'linkedinLink', label: 'LinkedIn', value: formData.linkedinLink },
   ].filter((f) => f.value);
 
   const copySection = async (section: 'personal' | 'address' | 'ids' | 'all') => {
@@ -174,6 +185,72 @@ export function ReviewPanel({
                 <CopyButton value={field.value || ''} />
               </div>
             ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Extension Section */}
+      <Card className="border-accent/20 bg-accent/5 animate-fade-in">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Chrome className="h-5 w-5 text-accent" />
+            DocFill - Google Forms Auto-Fill Extension
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Download the Chrome extension to auto-fill Google Forms with your extracted data
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => {
+                const jsonData = JSON.stringify(formData, null, 2);
+                navigator.clipboard.writeText(jsonData).then(() => {
+                  setCopiedSection('json');
+                  setTimeout(() => setCopiedSection(null), 2000);
+                });
+              }}
+            >
+              <Clipboard className="h-4 w-4" />
+              {copiedSection === 'json' ? 'Copied JSON!' : 'Copy Data as JSON (for Extension Import)'}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => {
+                fetch("/docfill-extension.zip")
+                  .then(res => {
+                    if (!res.ok) throw new Error('Download failed');
+                    return res.blob();
+                  })
+                  .then(blob => {
+                    const a = document.createElement("a");
+                    a.href = URL.createObjectURL(blob);
+                    a.download = "docfill-extension.zip";
+                    a.click();
+                    URL.revokeObjectURL(a.href);
+                  })
+                  .catch(() => alert('Download failed. Please try again.'));
+              }}
+            >
+              <Download className="h-4 w-4" />
+              Download Extension (.zip)
+            </Button>
+          </div>
+          <div className="text-xs text-muted-foreground space-y-1 p-3 bg-secondary/50 rounded-lg">
+            <p className="font-semibold">How to install:</p>
+            <ol className="list-decimal list-inside space-y-0.5">
+              <li>Download and unzip the extension file</li>
+              <li>Open <code className="bg-secondary px-1 rounded">chrome://extensions</code> in Chrome</li>
+              <li>Enable <strong>Developer mode</strong> (top-right toggle)</li>
+              <li>Click <strong>Load unpacked</strong> → select the unzipped folder</li>
+              <li>Copy JSON data above → open extension → Settings → Import from Clipboard</li>
+              <li>Open any Google Form and click the 📄 button to auto-fill!</li>
+            </ol>
           </div>
         </CardContent>
       </Card>

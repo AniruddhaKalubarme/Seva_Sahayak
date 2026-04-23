@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DocFill Test Form - Verify Auto-Fill & Fuzzy Matching</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Google Sans', Roboto, Arial, sans-serif;
+    background: #f0ebf8;
+    margin: 0;
+    padding: 24px 12px;
+    color: #202124;
+  }
+  .container { max-width: 720px; margin: 0 auto; }
+  .header {
+    background: white;
+    border-top: 10px solid #673ab7;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }
+  .header h1 { margin: 0 0 8px; font-size: 32px; font-weight: 400; }
+  .header p { margin: 0; color: #5f6368; font-size: 14px; }
+  .banner {
+    background: #fff3cd; border: 1px solid #ffc107; padding: 12px 16px;
+    border-radius: 8px; margin-bottom: 12px; font-size: 13px; color: #5f4300;
+  }
+  .question {
+    background: white;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }
+  .question .freebirdFormviewerComponentsQuestionBaseTitle,
+  .question [role="heading"] {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    display: block;
+    color: #202124;
+  }
+  .required { color: #d93025; margin-left: 2px; }
+  .question input[type="text"],
+  .question textarea {
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #dadce0;
+    padding: 8px 0;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    background: transparent;
+    resize: vertical;
+  }
+  .question input[type="text"]:focus,
+  .question textarea:focus {
+    border-bottom: 2px solid #673ab7;
+    padding-bottom: 7px;
+  }
+  .radio-group { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+  .radio-option { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+  .radio-option [role="radio"] {
+    width: 18px; height: 18px; border: 2px solid #5f6368; border-radius: 50%;
+    display: inline-block; cursor: pointer; flex-shrink: 0;
+  }
+  .radio-option [role="radio"][aria-checked="true"] {
+    border-color: #673ab7;
+    background: radial-gradient(circle, #673ab7 40%, white 45%);
+  }
+  .section-title {
+    background: #673ab7; color: white; padding: 12px 20px;
+    border-radius: 8px; margin: 16px 0 12px; font-weight: 500;
+  }
+  .submit-btn {
+    background: #673ab7; color: white; border: none; padding: 10px 24px;
+    border-radius: 4px; font-size: 14px; cursor: pointer; font-weight: 500;
+  }
+  .submit-btn:hover { background: #5e35b1; }
+  textarea { min-height: 60px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>📄 DocFill Test Form</h1>
+    <p>This form mimics Google Forms structure. Use it to test the DocFill extension's auto-fill & fuzzy matching.</p>
+  </div>
+
+  <div class="banner">
+    <strong>How to test:</strong> Open this page in Chrome with the DocFill extension installed. Click the floating 📄 button (bottom-right) or the extension popup's "Fill Form" button. The extension matches by question label + aria-label.
+  </div>
+
+  <!-- ============ PERSONAL INFO ============ -->
+  <div class="section-title">Personal Information</div>
+
+  <div class="question" data-params="name">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">Full Name <span class="required">*</span></div>
+    <input type="text" aria-label="Your full name" placeholder="Your answer" />
+  </div>
+
+  <div class="question" data-params="father">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">Father's Name <span class="required">*</span></div>
+    <input type="text" aria-label="Father name" placeholder="Your answer" />
+  </div>
+
+  <div class="question" data-params="dob">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">Date of Birth</div>
+    <input type="text" aria-label="DOB (DD/MM/YYYY)" placeholder="Your answer" />
+  </div>
+
+  <div class="question" data-params="gender">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">Gender</div>
+    <div class="radio-group">
+      <label class="radio-option"><span role="radio" data-value="Male" aria-checked="false"></span>Male</label>
+      <label class="radio-option"><span role="radio" data-value="Female" aria-checked="false"></span>Female</label>
+      <label class="radio-option"><span role="radio" data-value="Other" aria-checked="false"></span>Other</label>
+    </div>
+  </div>
+
+  <!-- ============ CONTACT ============ -->
+  <div class="section-title">Contact Details</div>
+
+  <div class="question" data-params="email">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">Email Address <span class="required">*</span></div>
+    <input type="text" aria-label="Email" placeholder="Your answer" />
+  </div>
+
+  <div class="question" data-params="phone">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">Mobile Number <span class="required">*</span></div>
+    <input type="text" aria-label="Your contact number" placeholder="Your answer" />
+  </div>
+
+  <!-- ============ ADDRESS ============ -->
+  <div class="section-title">Address</div>
+
+  <div class="question" data-params="address">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">Full Residential Address</div>
+    <textarea aria-label="Permanent address" placeholder="Your answer"></textarea>
+  </div>
+
+  <div class="question" data-params="district">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">District / City</div>
+    <input type="text" aria-label="District" placeholder="Your answer" />
+  </div>
+
+  <div class="question" data-params="state">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">State</div>
+    <input type="text" aria-label="State" placeholder="Your answer" />
+  </div>
+
+  <div class="question" data-params="pincode">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">Pincode / Postal Code</div>
+    <input type="text" aria-label="Pin code" placeholder="Your answer" />
+  </div>
+
+  <!-- ============ GOVT IDs ============ -->
+  <div class="section-title">Government IDs</div>
+
+  <div class="question" data-params="aadhaar">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">Aadhaar Number</div>
+    <input type="text" aria-label="Aadhar Number (12 digits)" placeholder="Your answer" />
+  </div>
+
+  <div class="question" data-params="pan">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">PAN Card Number</div>
+    <input type="text" aria-label="PAN" placeholder="Your answer" />
+  </div>
+
+  <div class="question" data-params="voter">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">Voter ID (EPIC) Number</div>
+    <input type="text" aria-label="Voter ID number" placeholder="Your answer" />
+  </div>
+
+  <div class="question" data-params="dl">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">Driving License Number</div>
+    <input type="text" aria-label="DL number" placeholder="Your answer" />
+  </div>
+
+  <!-- ============ ACADEMICS ============ -->
+  <div class="section-title">Academic Details</div>
+
+  <div class="question" data-params="10th">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">10th / SSC Marks (%)</div>
+    <input type="text" aria-label="Class 10 percentage" placeholder="Your answer" />
+  </div>
+
+  <div class="question" data-params="12th">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">12th / HSC Marks (%)</div>
+    <input type="text" aria-label="Class XII percentage" placeholder="Your answer" />
+  </div>
+
+  <div class="question" data-params="sgpa">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">Engineering SGPA / CGPA</div>
+    <input type="text" aria-label="GPA" placeholder="Your answer" />
+  </div>
+
+  <!-- ============ CODING PROFILES ============ -->
+  <div class="section-title">Coding Profiles</div>
+
+  <div class="question" data-params="codechef">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">CodeChef Profile Link</div>
+    <input type="text" aria-label="CodeChef URL" placeholder="Your answer" />
+  </div>
+
+  <div class="question" data-params="leetcode">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">LeetCode Profile</div>
+    <input type="text" aria-label="LeetCode link" placeholder="Your answer" />
+  </div>
+
+  <div class="question" data-params="github">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">GitHub Profile URL</div>
+    <input type="text" aria-label="Github link" placeholder="Your answer" />
+  </div>
+
+  <div class="question" data-params="gfg">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">GeeksforGeeks Profile</div>
+    <input type="text" aria-label="GFG link" placeholder="Your answer" />
+  </div>
+
+  <div class="question" data-params="hackerrank">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">HackerRank Profile</div>
+    <input type="text" aria-label="Hacker Rank link" placeholder="Your answer" />
+  </div>
+
+  <div class="question" data-params="linkedin">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">LinkedIn Profile URL</div>
+    <input type="text" aria-label="Linked In" placeholder="Your answer" />
+  </div>
+
+  <!-- ============ CUSTOM FIELDS (from screenshot) - FUZZY MATCH TESTS ============ -->
+  <div class="section-title">Custom Fields (Fuzzy Matching Tests)</div>
+
+  <div class="question" data-params="personal-ach">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">Describe your Personal Achievements</div>
+    <textarea aria-label="Personal Achievement" placeholder="Your answer"></textarea>
+  </div>
+
+  <div class="question" data-params="tech-ach">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">List your Technical Achievements</div>
+    <textarea aria-label="Technical Achievement" placeholder="Your answer"></textarea>
+  </div>
+
+  <div class="question" data-params="prn">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">Enter your PRN Number</div>
+    <input type="text" aria-label="PRN" placeholder="Your answer" />
+  </div>
+
+  <div class="question" data-params="cocubes">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">Your CoCubes Score</div>
+    <input type="text" aria-label="Co Cubes score" placeholder="Your answer" />
+  </div>
+
+  <div class="question" data-params="leet-score">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">LeetCode Score / Rating</div>
+    <input type="text" aria-label="Leetcode score" placeholder="Your answer" />
+  </div>
+
+  <div class="question" data-params="aggregate">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">BE B-Tech Aggregate Percentage</div>
+    <input type="text" aria-label="BTech aggregate" placeholder="Your answer" />
+  </div>
+
+  <!-- ============ FUZZY VARIATIONS (reworded versions) ============ -->
+  <div class="section-title">Reworded Questions (Hard Fuzzy Tests)</div>
+
+  <div class="question" data-params="fuzzy-name">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">Kindly provide your name as per Aadhaar</div>
+    <input type="text" aria-label="Please enter your candidate name" placeholder="Your answer" />
+  </div>
+
+  <div class="question" data-params="fuzzy-mobile">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">Cell phone where we can reach you</div>
+    <input type="text" aria-label="Contact number" placeholder="Your answer" />
+  </div>
+
+  <div class="question" data-params="fuzzy-prn">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">What is your university PRN?</div>
+    <input type="text" aria-label="PRN id of student" placeholder="Your answer" />
+  </div>
+
+  <div class="question" data-params="fuzzy-leet">
+    <div class="freebirdFormviewerComponentsQuestionBaseTitle" role="heading">Please share your Leet Code score</div>
+    <input type="text" aria-label="Your leetcode rating" placeholder="Your answer" />
+  </div>
+
+  <div style="text-align:left; margin-top:20px;">
+    <button class="submit-btn" type="button" onclick="alert('This is a test form — submission is disabled.')">Submit</button>
+  </div>
+
+  <p style="text-align:center; color:#5f6368; font-size:12px; margin-top:24px;">
+    Test form for DocFill extension verification. Not a real Google Form.
+  </p>
+</div>
+
+<script>
+  // Make radio buttons clickable like Google Forms
+  document.querySelectorAll('[role="radio"]').forEach(r => {
+    r.addEventListener('click', () => {
+      const group = r.closest('.radio-group');
+      group.querySelectorAll('[role="radio"]').forEach(x => x.setAttribute('aria-checked', 'false'));
+      r.setAttribute('aria-checked', 'true');
+    });
+  });
+</script>
+</body>
+</html>

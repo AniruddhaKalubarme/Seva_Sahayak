@@ -262,9 +262,9 @@ export function SmartForm({ extractedData, formData, onFormChange, onSubmit, doc
   };
 
   return (
-    <div className="space-y-6">
-      {/* Form Section */}
-      <div>
+    <div className="flex flex-col lg:grid lg:grid-cols-3 gap-6">
+      {/* Form Section - Always first on mobile */}
+      <div className="lg:col-span-2 lg:order-1">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Personal Details */}
           <Card className="animate-fade-in">
@@ -365,6 +365,44 @@ export function SmartForm({ extractedData, formData, onFormChange, onSubmit, doc
         </CardContent>
       </Card>
 
+      {/* Contact Details */}
+      <Card className="animate-fade-in" style={{ animationDelay: '250ms' }}>
+        <CardHeader>
+          <CardTitle className="text-lg">Contact Details</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {renderFormField('email', 'Email Address', 'text', 'your.email@example.com')}
+            {renderFormField('phone', 'Phone Number', 'text', '+91 9876543210')}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Academic & Profile Details */}
+      <Card className="animate-fade-in" style={{ animationDelay: '300ms' }}>
+        <CardHeader>
+          <CardTitle className="text-lg">Academic & Profile</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {renderFormField('marks10th', '10th Marks / Percentage', 'text', 'e.g. 85% or 8.5 CGPA')}
+            {renderFormField('marks12th', '12th Marks / Percentage', 'text', 'e.g. 90% or 9.0 CGPA')}
+            {renderFormField('sgpa', 'Engineering SGPA', 'text', 'e.g. 8.5')}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {renderFormField('codechefLink', 'CodeChef Profile', 'text', 'https://www.codechef.com/users/username')}
+            {renderFormField('leetcodeLink', 'LeetCode Profile', 'text', 'https://leetcode.com/username')}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {renderFormField('githubLink', 'GitHub Profile', 'text', 'https://github.com/username')}
+            {renderFormField('gfgLink', 'GeeksforGeeks Profile', 'text', 'https://geeksforgeeks.org/user/username')}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {renderFormField('hackerrankLink', 'HackerRank Profile', 'text', 'https://hackerrank.com/username')}
+            {renderFormField('linkedinLink', 'LinkedIn Profile', 'text', 'https://linkedin.com/in/username')}
+          </div>
+        </CardContent>
+      </Card>
           {/* Actions */}
           <div className="flex justify-end gap-3">
             <Button type="button" variant="outline" onClick={() => onFormChange({})}>
@@ -377,59 +415,61 @@ export function SmartForm({ extractedData, formData, onFormChange, onSubmit, doc
         </form>
       </div>
 
-      {/* Document Preview Panel - Below form */}
-      <Card className="animate-fade-in">
-        <CardHeader className="pb-3">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Eye className="h-5 w-5" />
-            Document Preview
-          </CardTitle>
-          <CardDescription>Select a document to cross-check</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {documents.length > 0 ? (
-            <>
-              <div className="flex flex-wrap gap-2">
-                {documents.map((doc) => (
-                  <Button
-                    key={doc.id}
-                    type="button"
-                    variant={selectedDocId === doc.id ? 'default' : 'outline'}
-                    size="sm"
-                    className="gap-2"
-                    onClick={() => setSelectedDocId(selectedDocId === doc.id ? null : doc.id)}
-                  >
-                    <FileText className="h-4 w-4" />
-                    <span className="truncate max-w-[100px]">{doc.file.name.split('.')[0]}</span>
-                  </Button>
-                ))}
+      {/* Document Preview Panel - Below form on mobile, sidebar on desktop */}
+      <div className="lg:col-span-1 lg:order-2">
+        <Card className="lg:sticky lg:top-24 animate-fade-in">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              Document Preview
+            </CardTitle>
+            <CardDescription>Select a document to cross-check</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {documents.length > 0 ? (
+              <>
+                <div className="flex flex-wrap gap-2">
+                  {documents.map((doc) => (
+                    <Button
+                      key={doc.id}
+                      type="button"
+                      variant={selectedDocId === doc.id ? 'default' : 'outline'}
+                      size="sm"
+                      className="gap-2"
+                      onClick={() => setSelectedDocId(selectedDocId === doc.id ? null : doc.id)}
+                    >
+                      <FileText className="h-4 w-4" />
+                      <span className="truncate max-w-[100px]">{doc.file.name.split('.')[0]}</span>
+                    </Button>
+                  ))}
+                </div>
+                {selectedDocument && (
+                  <div className="mt-4 border rounded-lg overflow-hidden bg-muted/30">
+                    {selectedDocument.file.type === 'application/pdf' ? (
+                      <PdfPreview url={selectedDocument.preview} className="w-full" />
+                    ) : (
+                      <img
+                        src={selectedDocument.preview}
+                        alt="Document preview"
+                        className="w-full h-auto object-contain"
+                      />
+                    )}
+                  </div>
+                )}
+                {!selectedDocument && (
+                  <div className="flex items-center justify-center h-40 border-2 border-dashed rounded-lg text-muted-foreground">
+                    <p className="text-sm text-center">Click a document above to preview</p>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="flex items-center justify-center h-40 border-2 border-dashed rounded-lg text-muted-foreground">
+                <p className="text-sm text-center">No documents uploaded</p>
               </div>
-              {selectedDocument && (
-                <div className="mt-4 border rounded-lg overflow-hidden bg-muted/30">
-                  {selectedDocument.file.type === 'application/pdf' ? (
-                    <PdfPreview url={selectedDocument.preview} className="w-full" />
-                  ) : (
-                    <img
-                      src={selectedDocument.preview}
-                      alt="Document preview"
-                      className="w-full h-auto object-contain"
-                    />
-                  )}
-                </div>
-              )}
-              {!selectedDocument && (
-                <div className="flex items-center justify-center h-40 border-2 border-dashed rounded-lg text-muted-foreground">
-                  <p className="text-sm text-center">Click a document above to preview</p>
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="flex items-center justify-center h-40 border-2 border-dashed rounded-lg text-muted-foreground">
-              <p className="text-sm text-center">No documents uploaded</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

@@ -19,6 +19,17 @@ export interface ExtractedData {
   voterIdNumber?: string;
   drivingLicenseNumber?: string;
   confidence?: number;
+  marks10th?: string;
+  marks12th?: string;
+  sgpa?: string;
+  email?: string;
+  phone?: string;
+  codechefLink?: string;
+  leetcodeLink?: string;
+  githubLink?: string;
+  gfgLink?: string;
+  hackerrankLink?: string;
+  linkedinLink?: string;
 }
 
 interface ExtractedDataPanelProps {
@@ -74,6 +85,8 @@ export function ExtractedDataPanel({ data, isLoading }: ExtractedDataPanelProps)
     { key: 'fatherName', label: t('fatherName'), value: data.fatherName },
     { key: 'dateOfBirth', label: t('dateOfBirth'), value: data.dateOfBirth },
     { key: 'gender', label: t('gender'), value: data.gender ? t(data.gender) : undefined },
+    { key: 'email', label: 'Email', value: data.email },
+    { key: 'phone', label: 'Phone', value: data.phone },
     { key: 'address', label: t('address'), value: data.address },
     { key: 'district', label: t('district'), value: data.district },
     { key: 'state', label: t('state'), value: data.state },
@@ -82,36 +95,37 @@ export function ExtractedDataPanel({ data, isLoading }: ExtractedDataPanelProps)
     { key: 'panNumber', label: t('panNumber'), value: data.panNumber },
     { key: 'voterIdNumber', label: t('voterIdNumber'), value: data.voterIdNumber },
     { key: 'drivingLicenseNumber', label: t('drivingLicenseNumber'), value: data.drivingLicenseNumber },
+    { key: 'marks10th', label: '10th Marks', value: data.marks10th },
+    { key: 'marks12th', label: '12th Marks', value: data.marks12th },
+    { key: 'sgpa', label: 'Engineering SGPA', value: data.sgpa },
+    { key: 'codechefLink', label: 'CodeChef', value: data.codechefLink },
+    { key: 'leetcodeLink', label: 'LeetCode', value: data.leetcodeLink },
+    { key: 'githubLink', label: 'GitHub', value: data.githubLink },
+    { key: 'gfgLink', label: 'GeeksforGeeks', value: data.gfgLink },
+    { key: 'hackerrankLink', label: 'HackerRank', value: data.hackerrankLink },
+    { key: 'linkedinLink', label: 'LinkedIn', value: data.linkedinLink },
   ].filter((f) => f.value);
 
   const copyLabels: Record<string, string> = {
-    name: t('name'),
-    fatherName: t('fatherName'),
-    dateOfBirth: t('dateOfBirth'),
-    gender: t('gender'),
-    address: t('address'),
-    district: t('district'),
-    state: t('state'),
-    pincode: t('pincode'),
-    aadhaarNumber: t('aadhaarNumber'),
-    panNumber: t('panNumber'),
-    voterIdNumber: t('voterIdNumber'),
-    drivingLicenseNumber: t('drivingLicenseNumber'),
+    name: t('name'), fatherName: t('fatherName'), dateOfBirth: t('dateOfBirth'),
+    gender: t('gender'), email: 'Email', phone: 'Phone',
+    address: t('address'), district: t('district'), state: t('state'), pincode: t('pincode'),
+    aadhaarNumber: t('aadhaarNumber'), panNumber: t('panNumber'),
+    voterIdNumber: t('voterIdNumber'), drivingLicenseNumber: t('drivingLicenseNumber'),
+    marks10th: '10th Marks', marks12th: '12th Marks', sgpa: 'Engineering SGPA',
+    codechefLink: 'CodeChef', leetcodeLink: 'LeetCode', githubLink: 'GitHub',
+    gfgLink: 'GeeksforGeeks', hackerrankLink: 'HackerRank', linkedinLink: 'LinkedIn',
   };
 
   const copyData: Record<string, string | undefined> = {
-    name: data.name,
-    fatherName: data.fatherName,
-    dateOfBirth: data.dateOfBirth,
-    gender: data.gender ? t(data.gender) : undefined,
-    address: data.address,
-    district: data.district,
-    state: data.state,
-    pincode: data.pincode,
-    aadhaarNumber: data.aadhaarNumber,
-    panNumber: data.panNumber,
-    voterIdNumber: data.voterIdNumber,
-    drivingLicenseNumber: data.drivingLicenseNumber,
+    name: data.name, fatherName: data.fatherName, dateOfBirth: data.dateOfBirth,
+    gender: data.gender ? t(data.gender) : undefined, email: data.email, phone: data.phone,
+    address: data.address, district: data.district, state: data.state, pincode: data.pincode,
+    aadhaarNumber: data.aadhaarNumber, panNumber: data.panNumber,
+    voterIdNumber: data.voterIdNumber, drivingLicenseNumber: data.drivingLicenseNumber,
+    marks10th: data.marks10th, marks12th: data.marks12th, sgpa: data.sgpa,
+    codechefLink: data.codechefLink, leetcodeLink: data.leetcodeLink, githubLink: data.githubLink,
+    gfgLink: data.gfgLink, hackerrankLink: data.hackerrankLink, linkedinLink: data.linkedinLink,
   };
 
   return (
