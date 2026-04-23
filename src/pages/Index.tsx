@@ -314,7 +314,8 @@ export default function Index() {
   }, []);
 
   const handleDownloadExtension = useCallback(() => {
-    fetch('/docfill-extension.zip')
+    const basePath = import.meta.env.BASE_URL;
+    fetch(`${basePath}docfill-extension.zip`)
       .then((res) => {
         if (!res.ok) throw new Error(`Download failed: ${res.status}`);
         return res.blob();
