@@ -6,6 +6,7 @@ export function Header() {
   const { t } = useLanguage();
 
   return (
+    // The header stays visible while users move through the workflow.
     <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 tricolor-border">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-3">

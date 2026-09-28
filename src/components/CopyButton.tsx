@@ -11,6 +11,7 @@ interface CopyButtonProps {
   className?: string;
 }
 
+// Reusable clipboard control used beside individual fields and in larger panels.
 export function CopyButton({ 
   value, 
   label, 
@@ -24,6 +25,7 @@ export function CopyButton({
     if (!value) return;
     
     try {
+      // Clipboard access is asynchronous and may be denied by browser permissions.
       await navigator.clipboard.writeText(value);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -86,6 +88,7 @@ export function CopyAllButton({ data, labels = {}, className }: CopyAllButtonPro
   const [copied, setCopied] = useState(false);
 
   const handleCopyAll = async () => {
+    // Convert the object into readable label/value lines before copying it.
     const formattedText = Object.entries(data)
       .filter(([_, value]) => value)
       .map(([key, value]) => `${labels[key] || key}: ${value}`)

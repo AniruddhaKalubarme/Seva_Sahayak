@@ -1,3 +1,4 @@
+<!-- Chrome opens this page as the extension popup when the toolbar icon is clicked. -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -45,18 +46,19 @@
     <p>Auto-fill Google Forms with your document data</p>
   </div>
   
+  <!-- The three panels share one popup: view saved values, edit them, or run settings/actions. -->
   <div class="tabs">
     <button class="tab active" data-tab="view">View Data</button>
     <button class="tab" data-tab="edit">Edit</button>
     <button class="tab" data-tab="settings">Settings</button>
   </div>
 
-  <!-- View Tab -->
+  <!-- View Tab: popup.js fills this container with the currently stored data. -->
   <div id="tab-view" class="content">
     <div id="data-display"></div>
   </div>
 
-  <!-- Edit Tab -->
+  <!-- Edit Tab: these IDs are read by popup.js when loading and saving values. -->
   <div id="tab-edit" class="content hidden">
     <div class="section-title">👤 Personal Info</div>
     <div class="field-group"><label>Full Name</label><input type="text" id="edit-name"></div>

@@ -1,5 +1,9 @@
+// Supported language codes are kept as a union so components cannot request
+// an unsupported language accidentally.
 export type Language = 'en' | 'hi' | 'mr';
 
+// UI text is grouped by language and accessed through getTranslation below.
+// Keeping translations in one object makes language switching consistent.
 export const translations = {
   en: {
     // App

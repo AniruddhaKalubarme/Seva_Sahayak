@@ -20,6 +20,7 @@ export function ReviewPanel({
   onDownload,
 }: ReviewPanelProps) {
   const { t } = useLanguage();
+  // Stores which copy button was most recently successful for temporary feedback.
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
 
   const dataFields = [
@@ -50,6 +51,7 @@ export function ReviewPanel({
 
   const copySection = async (section: 'personal' | 'address' | 'ids' | 'all') => {
     let text = '';
+    // Build only the requested group so users can paste focused information into another form.
     
     switch (section) {
       case 'personal':

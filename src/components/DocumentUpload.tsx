@@ -4,6 +4,8 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
+// This type is the shared contract between the upload UI and Index.tsx.
+// It keeps the original File, its preview URL, detected type, and UI status together.
 export interface UploadedDocument {
   id: string;
   file: File;
@@ -28,6 +30,7 @@ const documentTypeIcons: Record<string, React.ReactNode> = {
 
 export function DocumentUpload({ documents, onUpload, onRemove }: DocumentUploadProps) {
   const { t } = useLanguage();
+  // Drag state changes the upload zone appearance while a file is held over it.
   const [isDragging, setIsDragging] = useState(false);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -44,6 +47,7 @@ export function DocumentUpload({ documents, onUpload, onRemove }: DocumentUpload
     (e: React.DragEvent) => {
       e.preventDefault();
       setIsDragging(false);
+      // Convert FileList to a normal array before sending files to the parent page.
       const files = Array.from(e.dataTransfer.files);
       onUpload(files);
     },
@@ -53,6 +57,7 @@ export function DocumentUpload({ documents, onUpload, onRemove }: DocumentUpload
   const handleFileSelect = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.files) {
+        // The same parent callback handles both picker and drag-and-drop uploads.
         const files = Array.from(e.target.files);
         onUpload(files);
       }

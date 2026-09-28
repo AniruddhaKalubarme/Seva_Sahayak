@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as pdfjsLib from "pdfjs-dist";
 
-// Use Vite-friendly worker URL (ships with pdfjs-dist)
+// PDF.js uses a worker for parsing; this URL lets Vite bundle the worker correctly.
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
   import.meta.url
@@ -15,6 +15,7 @@ interface PdfPreviewProps {
 }
 
 export function PdfPreview({ url, className, page = 1 }: PdfPreviewProps) {
+  // Refs connect React to the DOM elements that PDF.js must measure and draw into.
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -25,6 +26,7 @@ export function PdfPreview({ url, className, page = 1 }: PdfPreviewProps) {
   const safePage = useMemo(() => (page < 1 ? 1 : page), [page]);
 
   useEffect(() => {
+    // Re-render when the preview container changes width so the PDF stays responsive.
     if (!containerRef.current) return;
 
     const el = containerRef.current;
@@ -39,6 +41,7 @@ export function PdfPreview({ url, className, page = 1 }: PdfPreviewProps) {
   }, []);
 
   useEffect(() => {
+    // Cancel stale renders when the document, page, or component changes mid-request.
     let cancelled = false;
 
     async function render() {
@@ -61,6 +64,7 @@ export function PdfPreview({ url, className, page = 1 }: PdfPreviewProps) {
         if (!canvas) return;
 
         const initialViewport = pdfPage.getViewport({ scale: 1 });
+        // Scale the page to the available width instead of using a fixed desktop size.
         const targetWidth = Math.max(1, containerWidth || initialViewport.width);
         const scale = targetWidth / initialViewport.width;
         const viewport = pdfPage.getViewport({ scale });

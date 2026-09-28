@@ -18,6 +18,7 @@ const languages: { code: Language; label: string; nativeLabel: string }[] = [
 export function LanguageSwitcher() {
   const { language, setLanguage, t } = useLanguage();
 
+  // Find the label shown on the closed menu; the menu itself lists every option below.
   const currentLang = languages.find((l) => l.code === language);
 
   return (

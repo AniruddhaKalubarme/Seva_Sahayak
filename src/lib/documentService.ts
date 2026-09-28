@@ -1,5 +1,3 @@
-import { supabase } from '@/integrations/supabase/client';
-
 export interface ExtractedDocumentData {
   name?: string;
   fatherName?: string;
@@ -18,6 +16,39 @@ export interface ExtractedDocumentData {
 
 export type ExtractionMode = 'full' | 'pan_only' | 'voter_only' | 'dl_only';
 
+function getSystemPrompt(extractionMode: ExtractionMode): string {
+  const englishRule = 'CRITICAL: ALL extracted text MUST be in ENGLISH only. If the document contains text in Hindi, Marathi, or any other Indian regional language, you MUST transliterate/translate it to English.';
+  
+  if (extractionMode === 'pan_only') {
+    return `You are an OCR assistant for Indian PAN cards. ${englishRule} Extract ONLY the PAN number and father's name. Return JSON: {"panNumber": "...", "fatherName": "...", "confidence": 0.0-1.0}`;
+  }
+  if (extractionMode === 'voter_only') {
+    return `You are an OCR assistant for Indian Voter ID. ${englishRule} Extract ONLY the Voter ID number. Return JSON: {"voterIdNumber": "...", "confidence": 0.0-1.0}`;
+  }
+  if (extractionMode === 'dl_only') {
+    return `You are an OCR assistant for Indian Driving Licenses. ${englishRule} Extract ONLY the DL number. Return JSON: {"drivingLicenseNumber": "...", "confidence": 0.0-1.0}`;
+  }
+  return `You are an OCR assistant for Indian government documents. ${englishRule} Extract personal information. IMPORTANT: Aadhaar must be exactly 12 digits (format: XXXX XXXX XXXX). Return JSON with: name, fatherName, dateOfBirth (YYYY-MM-DD), gender (male/female/other), address, district, state, pincode (6 digits), aadhaarNumber (12 digits), panNumber, voterIdNumber, drivingLicenseNumber, confidence.`;
+}
+
+function getExtractionPrompt(documentType: string, extractionMode: ExtractionMode): string {
+  const englishRule = 'IMPORTANT: Output ALL text in ENGLISH only - transliterate any Hindi/Marathi/regional text to English.';
+  
+  if (extractionMode === 'pan_only') return `Extract PAN number (10 chars) and complete father's name from this PAN card. ${englishRule}`;
+  if (extractionMode === 'voter_only') return `Extract the EPIC/Voter ID number from this Voter ID card. ${englishRule}`;
+  if (extractionMode === 'dl_only') return `Extract the Driving License number from this document. ${englishRule}`;
+
+  const prompts: Record<string, string> = {
+    aadhaar: `This is an Aadhaar Card. Extract ALL visible information. CRITICAL: The Aadhaar number MUST be exactly 12 digits (format: XXXX XXXX XXXX). Look for S/O, D/O, W/O, C/O for father's/husband's name. Extract full address from back side. ${englishRule}`,
+    pan: `This is a PAN Card. Extract full name, father's name (complete), date of birth, and 10-character PAN number. ${englishRule}`,
+    voterId: `This is a Voter ID Card. Extract full name, father's name, date of birth, gender, address, and EPIC number. ${englishRule}`,
+    drivingLicense: `This is a Driving License. Extract full name, father's name, date of birth, address, and DL number. ${englishRule}`,
+    other: `This is an Indian government ID document. Extract all visible personal information including name, father's name, DOB, gender, address, and any ID numbers. Aadhaar must be exactly 12 digits. ${englishRule}`
+  };
+
+  return prompts[documentType] || prompts.other;
+}
+
 export async function extractDocument(
   imageBase64: string,
   documentType: string,
@@ -25,21 +56,103 @@ export async function extractDocument(
   extractionMode: ExtractionMode = 'full'
 ): Promise<{ success: boolean; data?: ExtractedDocumentData; error?: string }> {
   try {
-    const { data, error } = await supabase.functions.invoke('extract-document', {
-      body: {
-        imageBase64,
-        documentType,
-        mimeType,
-        extractionMode,
-      },
-    });
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY || (typeof window !== 'undefined' ? localStorage.getItem('VITE_GEMINI_API_KEY') : null);
 
-    if (error) {
-      console.error('Edge function error:', error);
-      return { success: false, error: error.message };
+    if (!apiKey) {
+      throw new Error('Gemini API key is not configured. Please add VITE_GEMINI_API_KEY to your .env file.');
     }
 
-    return data;
+    const cleanBase64 = imageBase64.includes(',') ? imageBase64.split(',')[1] : imageBase64;
+    const cleanMimeType = mimeType || 'image/jpeg';
+    const systemPrompt = getSystemPrompt(extractionMode);
+    const extractionPrompt = getExtractionPrompt(documentType, extractionMode);
+
+    const configuredModel = import.meta.env.VITE_GEMINI_MODEL || 'gemini-2.5-flash';
+    // List of reliable multimodal models to try if Google returns 503 (high demand) or 429
+    const candidateModels = [
+      configuredModel,
+      'gemini-3.5-flash-lite',
+      'gemini-2.5-flash',
+      'gemini-3.6-flash',
+    ].filter((m, i, arr) => arr.indexOf(m) === i);
+
+    let lastError: string | null = null;
+    let content: string | null = null;
+
+    for (const model of candidateModels) {
+      try {
+        console.log(`Attempting document extraction with model: ${model}`);
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            systemInstruction: {
+              parts: [{ text: systemPrompt }],
+            },
+            contents: [
+              {
+                role: 'user',
+                parts: [
+                  { text: extractionPrompt },
+                  {
+                    inlineData: {
+                      mimeType: cleanMimeType,
+                      data: cleanBase64,
+                    },
+                  },
+                ],
+              },
+            ],
+            generationConfig: {
+              responseMimeType: 'application/json',
+              temperature: 0.1,
+            },
+          }),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.warn(`Model ${model} returned error ${response.status}:`, errorText);
+          
+          // If the model is experiencing high demand (503) or rate limit (429), try next candidate
+          if (response.status === 503 || response.status === 429) {
+            lastError = `Google servers are busy (${response.status}).`;
+            continue;
+          }
+          throw new Error(`Gemini API error (${response.status}): ${errorText}`);
+        }
+
+        const aiResponse = await response.json();
+        content = aiResponse.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (content) {
+          console.log(`Document extraction succeeded using model: ${model}`);
+          break; // successfully got response
+        }
+      } catch (err) {
+        console.warn(`Failed with model ${model}:`, err);
+        lastError = err instanceof Error ? err.message : String(err);
+      }
+    }
+
+    if (!content) {
+      throw new Error(lastError || 'All Gemini models are temporarily experiencing high demand. Please try again in a few seconds.');
+    }
+
+    let extractedData: ExtractedDocumentData;
+    try {
+      const jsonMatch = content.match(/```json\n?([\s\S]*?)\n?```/) || content.match(/\{[\s\S]*\}/);
+      const jsonString = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : content;
+      extractedData = JSON.parse(jsonString.trim());
+    } catch (parseError) {
+      console.error('Failed to parse AI response:', content);
+      throw new Error('Failed to parse extracted data from document');
+    }
+
+    return { success: true, data: extractedData };
   } catch (error) {
     console.error('Extraction error:', error);
     return { 
@@ -51,6 +164,8 @@ export async function extractDocument(
 
 // Helper to determine extraction mode based on document type
 export function getExtractionModeForDocument(documentType: string, isPrimary: boolean): ExtractionMode {
+  // The primary document supplies general details; secondary documents only
+  // need extraction for the identifier that makes them useful.
   if (isPrimary) return 'full';
   
   switch (documentType) {
@@ -67,6 +182,8 @@ export function getExtractionModeForDocument(documentType: string, isPrimary: bo
 
 export function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
+    // The Edge Function receives JSON, so convert the browser File into text
+    // that can be included in the request body.
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {

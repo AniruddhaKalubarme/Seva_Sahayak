@@ -1,3 +1,5 @@
+// These keys must match the data object exported by the React app and the
+// selectors used by content.js when it fills a form.
 const FIELDS = [
   { key: 'name', label: 'Full Name', section: 'personal' },
   { key: 'fatherName', label: "Father's Name", section: 'personal' },
@@ -24,10 +26,11 @@ const FIELDS = [
   { key: 'linkedinLink', label: 'LinkedIn Profile', section: 'academic' },
 ];
 
+// Popup state is kept in memory while the popup is open and persisted in Chrome storage.
 let currentData = {};
 let customFields = []; // { key, label }
 
-// Tab switching
+// The popup is a small multi-tab interface; only one content panel is visible at a time.
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -37,7 +40,7 @@ document.querySelectorAll('.tab').forEach(tab => {
   });
 });
 
-// Load data
+// Restore saved data whenever the popup opens so it survives popup closing or browser restart.
 function loadData() {
   chrome.storage.local.get(['docfillData', 'docfillCustomFields', 'docfillDebug'], (result) => {
     currentData = result.docfillData || {};
@@ -51,6 +54,7 @@ function loadData() {
 }
 
 function renderView() {
+  // The view tab is generated from stored values, so empty fields do not clutter the summary.
   const container = document.getElementById('data-display');
   const filledFields = FIELDS.filter(f => currentData[f.key]);
   
@@ -100,6 +104,7 @@ function populateEdit() {
 }
 
 function renderCustomFields() {
+  // Custom fields are rendered dynamically because users can add their own form questions.
   const container = document.getElementById('custom-fields-container');
   if (customFields.length === 0) {
     container.innerHTML = `<p style="font-size:12px;color:#94a3b8;text-align:center;padding:8px 0;">No custom fields yet. Add one below.</p>`;
@@ -227,7 +232,7 @@ document.getElementById('import-custom-btn').addEventListener('click', () => {
   });
 });
 
-// Save
+// Save both built-in and custom fields back to Chrome storage.
 document.getElementById('save-btn').addEventListener('click', () => {
   FIELDS.forEach(f => {
     const el = document.getElementById('edit-' + f.key);
@@ -252,7 +257,7 @@ document.getElementById('save-btn').addEventListener('click', () => {
   });
 });
 
-// Fill Google Form
+// Ask the content script running in the active tab to perform the actual form filling.
 document.getElementById('fill-btn').addEventListener('click', async () => {
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });

@@ -15,6 +15,8 @@ import { extractDocument, fileToBase64, getExtractionModeForDocument, ExtractedD
 export default function Index() {
   const { t } = useLanguage();
   const { toast } = useToast();
+  // These values describe the user's progress through the four-step workflow.
+  // Keeping them here lets one page coordinate upload, extraction, editing, and export.
   const [currentStep, setCurrentStep] = useState(1);
   const [documents, setDocuments] = useState<UploadedDocument[]>([]);
   const [extractedData, setExtractedData] = useState<ExtractedData | null>(null);
@@ -23,6 +25,7 @@ export default function Index() {
 
   // Handle document upload
   const handleDocumentUpload = useCallback((files: File[]) => {
+    // Store files locally so the user can preview and process them without a database upload.
     const newDocs: UploadedDocument[] = files.map((file) => ({
       id: `doc-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       file,
@@ -33,7 +36,7 @@ export default function Index() {
 
     setDocuments((prev) => [...prev, ...newDocs]);
 
-    // Simulate upload progress
+    // There is no remote storage upload yet, so this delay only gives the UI an upload state.
     newDocs.forEach((doc) => {
       setTimeout(() => {
         setDocuments((prev) =>
@@ -50,6 +53,7 @@ export default function Index() {
   }, [t, toast]);
 
   const handleDocumentRemove = useCallback((id: string) => {
+    // Remove only the selected document while preserving the rest of the upload queue.
     setDocuments((prev) => prev.filter((d) => d.id !== id));
   }, []);
 
@@ -68,18 +72,18 @@ export default function Index() {
     setCurrentStep(2);
 
     try {
-      // Find all Aadhaar cards (could be front and back)
+      // Aadhaar often has separate front and back images, so collect both first.
       const aadhaarDocs = documents.filter(d => d.type === 'aadhaar');
       const otherDocs = documents.filter(d => d.type !== 'aadhaar');
       
-      // Determine processing order: All Aadhaar docs first (if exists), then others
+      // Process Aadhaar first so its general personal details become the base data.
       const processingOrder = aadhaarDocs.length > 0 
         ? [...aadhaarDocs, ...otherDocs] 
         : documents;
 
       let mergedData: ExtractedData = {};
 
-      // Process each document
+      // Process documents one at a time because each extraction is an asynchronous AI request.
       for (let i = 0; i < processingOrder.length; i++) {
         const doc = processingOrder[i];
         const isAadhaar = doc.type === 'aadhaar';
@@ -105,10 +109,11 @@ export default function Index() {
 
         if (!result.success || !result.data) {
           console.error(`Extraction failed for ${doc.type}:`, result.error);
-          continue;
+          throw new Error(result.error || `Failed to extract information from ${doc.file.name}`);
         }
 
-        // Smart merge logic
+        // Merge each result according to its role: Aadhaar supplies general details,
+        // while secondary documents mainly contribute their own identifier.
         if (isAadhaar) {
           // For Aadhaar documents (front or back), merge all extracted data
           // Only set values if they exist and are not already set (to avoid overwriting with empty values)
@@ -181,7 +186,7 @@ export default function Index() {
         }
       }
 
-      // If no Aadhaar but we have other documents, use the first one as base
+      // Without Aadhaar, the first available document still needs to provide the base details.
       if (aadhaarDocs.length === 0 && documents.length > 0 && !mergedData.name) {
         const firstDoc = documents[0];
         const base64 = await fileToBase64(firstDoc.file);
@@ -205,7 +210,7 @@ export default function Index() {
         }
       }
 
-      // Validate Aadhaar number if present
+      // Normalize Aadhaar before displaying it so valid numbers have one consistent format.
       if (mergedData.aadhaarNumber) {
         const validation = validateAadhaarNumber(mergedData.aadhaarNumber);
         if (validation.isValid && validation.cleanedNumber) {
@@ -341,6 +346,7 @@ export default function Index() {
   }, [toast]);
 
   const goToNextStep = () => {
+    // Each transition checks that the data required by the next step exists first.
     if (currentStep === 1 && documents.length > 0) {
       handleExtract();
     } else if (currentStep === 2 && extractedData) {
@@ -351,6 +357,7 @@ export default function Index() {
   };
 
   const goToPreviousStep = () => {
+    // Step 1 has no previous screen, so never allow the counter to go below 1.
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }

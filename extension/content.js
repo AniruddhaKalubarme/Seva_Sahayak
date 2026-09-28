@@ -1,6 +1,7 @@
-// Content script for Google Forms auto-fill
+// This script runs inside the current webpage and is responsible for finding
+// form questions and inserting the saved values from the extension popup.
 (function() {
-  // Field matching keywords for Google Forms
+  // Keyword aliases handle different labels such as "Mobile", "Phone", or "Contact number".
   const FIELD_MATCHERS = {
     name: ['name', 'full name', 'your name', 'applicant name', 'candidate name', 'student name', 'नाम'],
     fatherName: ["father", "father's name", "father name", "guardian", "parent", "पिता"],
@@ -27,7 +28,7 @@
     linkedinLink: ['linkedin', 'linked in'],
   };
 
-  // Listen for messages from popup
+  // The popup sends commands here because it cannot directly modify the active webpage.
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === 'fillForm') {
       chrome.storage.local.get(['docfillCustomFields', 'docfillDebug'], (result) => {
@@ -41,7 +42,7 @@
     }
   });
 
-  // ---------- Fuzzy matching helpers ----------
+  // Normalize labels before matching so capitalization and punctuation do not affect results.
   const STOP_WORDS = new Set([
     'the', 'a', 'an', 'of', 'to', 'in', 'on', 'for', 'and', 'or', 'your',
     'my', 'is', 'are', 'please', 'enter', 'provide', 'kindly',
@@ -106,7 +107,7 @@
     return matched / labelTokens.length;
   }
 
-  // ---------- Option selection helpers (radio / dropdown) ----------
+  // Radio buttons and dropdowns need clicks, unlike text fields which accept a value directly.
   function selectRadioOption(container, value) {
     if (!value) return false;
     const target = normalize(String(value));
@@ -186,6 +187,7 @@
   function fillGoogleForm(data, customFields, debug) {
     if (!data || Object.keys(data).length === 0) return;
 
+    // A second fill should replace old debug markers instead of stacking overlays.
     // Clear previous debug overlays
     document.querySelectorAll('.docfill-debug-overlay, .docfill-debug-badge').forEach(n => n.remove());
     if (debug) {
@@ -199,7 +201,7 @@
       .map(cf => ({ key: cf.key, label: cf.label, tokens: meaningfulTokens(cf.label) }))
       .filter(cf => cf.tokens.length > 0);
 
-    // Find all unique question containers, then derive their label text.
+    // Find question containers across both real Google Forms and the local test form.
     // Google Forms uses role="listitem" for each question; older markup uses the
     // freebird class names; our test form uses [data-params] / .question.
     const containerSelector = [
@@ -247,7 +249,7 @@
       }
       const lower = labelText.toLowerCase();
 
-      // Score predefined fields: count keyword hits, prefer longest match
+      // Score predefined fields: keyword matches identify the likely destination field.
       let best = { score: 0, value: null, source: null };
       const allScores = [];
       for (const [fieldKey, keywords] of Object.entries(FIELD_MATCHERS)) {

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { CopyButton, CopyAllButton } from './CopyButton';
 
+// This shape is shared by extraction, the editable form, and the export screen.
 export interface ExtractedData {
   name?: string;
   fatherName?: string;
@@ -39,6 +40,7 @@ interface ExtractedDataPanelProps {
 
 export function ExtractedDataPanel({ data, isLoading }: ExtractedDataPanelProps) {
   const { t } = useLanguage();
+  // Used only for the short visual confirmation after JSON is copied.
   const [copied, setCopied] = useState(false);
 
   const handleCopyJson = () => {
@@ -104,6 +106,7 @@ export function ExtractedDataPanel({ data, isLoading }: ExtractedDataPanelProps)
     { key: 'gfgLink', label: 'GeeksforGeeks', value: data.gfgLink },
     { key: 'hackerrankLink', label: 'HackerRank', value: data.hackerrankLink },
     { key: 'linkedinLink', label: 'LinkedIn', value: data.linkedinLink },
+  // Hide empty fields so the result is easy to scan.
   ].filter((f) => f.value);
 
   const copyLabels: Record<string, string> = {

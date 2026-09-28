@@ -23,3 +23,21 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+*.pdf
+*.doc
+*.txt
+*.docx
+
+# Temporary files
+*.tmp
+*.temp
+
+# Build outputs (optional - if you want to preserve)
+build/
+coverage/
+dist/
+*.zip
+
+# OS files
+Thumbs.db

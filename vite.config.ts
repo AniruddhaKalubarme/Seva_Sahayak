@@ -1,13 +1,13 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { componentTagger } from "lovable-tagger";
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Plugin to copy extension folder
+// The browser extension is a separate deliverable, so copy it into the build
+// output instead of bundling it into the React application.
 const copyExtensionPlugin = {
   name: 'copy-extension',
   writeBundle(options) {
@@ -26,18 +26,20 @@ const copyExtensionPlugin = {
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  // This base path is required because the production app is hosted in a repository subfolder.
   base: "/Seva_Sahayak/",
   server: {
+    // Allow access from the local network while developing and keep the dev port predictable.
     host: "::",
     port: 8080,
   },
   plugins: [
     react(),
-    mode === 'development' && componentTagger(),
     copyExtensionPlugin,
   ].filter(Boolean),
   resolve: {
     alias: {
+      // "@/" keeps imports independent of the importing file's folder depth.
       "@": path.resolve(__dirname, "./src"),
     },
   },

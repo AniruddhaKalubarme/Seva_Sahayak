@@ -1,3 +1,4 @@
+<!-- This is the single HTML page loaded by Vite; React renders inside #root below. -->
 <!doctype html>
 <html lang="en">
   <head>
@@ -14,11 +15,13 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@SevaSahayak" />
     
+    <!-- The favicon is a static public asset, while the application itself is mounted below. -->
     <link rel="canonical" href="/" />
     <link rel="icon" href="/favicon.png" type="image/png" />
   </head>
 
   <body>
+    <!-- React replaces this empty container with the UI from src/main.tsx. -->
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

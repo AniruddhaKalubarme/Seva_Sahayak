@@ -1,13 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* This file is the application's design system: global colors, typography,
+   reusable utility classes, and light/dark theme values live here. */
 /* Indian Citizen Services Form Assistant - Design System
    Color palette: Deep blue (trust/government), Saffron (Indian identity), Clean whites
    All colors in HSL format
 */
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
 
 @layer base {
   :root {

@@ -39,6 +39,8 @@ const indianStates = [
 
 export function SmartForm({ extractedData, formData, onFormChange, onSubmit, documents = [] }: SmartFormProps) {
   const { t } = useLanguage();
+  // Each error belongs to one field so validation messages can appear beside
+  // the input that needs correction instead of blocking the entire form.
   const [aadhaarError, setAadhaarError] = useState<string | null>(null);
   const [panError, setPanError] = useState<string | null>(null);
   const [dlError, setDlError] = useState<string | null>(null);
@@ -49,6 +51,7 @@ export function SmartForm({ extractedData, formData, onFormChange, onSubmit, doc
   const selectedDocument = documents.find(d => d.id === selectedDocId);
 
   const handleFieldChange = (field: keyof ExtractedData, value: string) => {
+    // Normalize identifier fields as the user types, then validate the normalized value.
     let processedValue = value;
     
     // Sanitize Aadhaar input - remove alphabets
@@ -135,6 +138,7 @@ export function SmartForm({ extractedData, formData, onFormChange, onSubmit, doc
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Revalidate on submit because users may submit without changing the field recently.
     
     let updatedFormData = { ...formData };
     

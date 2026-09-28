@@ -12,6 +12,7 @@ interface VoiceInputButtonProps {
 
 export function VoiceInputButton({ onTranscript, disabled, className }: VoiceInputButtonProps) {
   const { t } = useLanguage();
+  // This state controls both the icon and the listening animation.
   const [isListening, setIsListening] = useState(false);
 
   const handleClick = () => {
@@ -25,6 +26,7 @@ export function VoiceInputButton({ onTranscript, disabled, className }: VoiceInp
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       
       if (SpeechRecognition) {
+        // The browser performs speech-to-text locally or through its configured speech service.
         const recognition = new SpeechRecognition();
         recognition.lang = 'en-IN'; // Indian English, can switch based on language context
         recognition.interimResults = false;

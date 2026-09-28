@@ -9,6 +9,7 @@ interface StepIndicatorProps {
 export function StepIndicator({ currentStep }: StepIndicatorProps) {
   const { t } = useLanguage();
 
+  // Labels come from the language dictionary so the progress indicator changes language too.
   const steps = [
     { key: 'step1', label: t('step1') },
     { key: 'step2', label: t('step2') },
@@ -20,6 +21,7 @@ export function StepIndicator({ currentStep }: StepIndicatorProps) {
     <div className="flex items-center justify-center gap-2 md:gap-4">
       {steps.map((step, index) => {
         const stepNumber = index + 1;
+        // A step is complete only when the page has moved beyond it.
         const isActive = stepNumber === currentStep;
         const isComplete = stepNumber < currentStep;
 
